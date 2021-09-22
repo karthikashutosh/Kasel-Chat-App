@@ -22,7 +22,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 const storage = app.storage().ref("images");
 const audioStorage = app.storage().ref("audios");
 const createTimestamp = firebase.firestore.FieldValue.serverTimeStamp;
-const serverTimeStamp = firebase.database.ServerValue.TIMESTAMP;
+const serverTimeStamp = app.database.ServerValue.TIMESTAMP;
 
 export {
   db,
