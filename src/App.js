@@ -2,22 +2,22 @@ import React from "react";
 import "./App.css";
 import useWindowSize from "./hooks/useWindowSize";
 import Login from "./components/Login";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase";
+import useAuthUser from "./hooks/useAuthUser";
+import Sidebar from "./components/Sidebar";
 
 export default function App() {
   const page = useWindowSize();
-  const [user] = useAuthState(auth);
+  const user = useAuthUser();
 
   if (!user) {
     return <Login />;
   }
 
-  console.log({ user });
-
   return (
     <div className="app" style={{ ...page }}>
-      App
+      <div className="app__body">
+        <Sidebar user={user} page={page} />
+      </div>
     </div>
   );
 }

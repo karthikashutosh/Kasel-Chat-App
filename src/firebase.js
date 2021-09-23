@@ -14,15 +14,15 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-const db = app.firestore();
-const auth = app.auth();
+const db = firebaseApp.firestore();
+const auth = firebaseApp.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
-const storage = app.storage().ref("images");
-const audioStorage = app.storage().ref("audios");
-const createTimestamp = firebase.firestore.FieldValue.serverTimeStamp;
-const serverTimeStamp = firebase.database.ServerValue.TIMESTAMP;
+const storage = firebase.storage().ref("images");
+const audioStorage = firebase.storage().ref("audios");
+const createTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+const serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
 
 export {
   db,
@@ -31,5 +31,5 @@ export {
   storage,
   audioStorage,
   createTimestamp,
-  serverTimeStamp,
+  serverTimestamp,
 };
