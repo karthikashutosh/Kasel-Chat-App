@@ -13,7 +13,7 @@ export default function useAuthUser() {
           ref.set({
             name: user.displayName,
             photoURL: user.photoURL,
-            timestamp: createTimestamp(),
+              timestamp: createTimestamp(),
           });
         }
       });
