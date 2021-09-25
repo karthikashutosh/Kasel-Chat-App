@@ -15,13 +15,17 @@ import SidebarList from "./SidebarList";
 import { db, createTimestamp } from "../firebase";
 import useRooms from "../hooks/useRooms";
 import useUser from "../hooks/useUsers";
+import useChats from "../hooks/useChats";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 export default function Sidebar({ user, page }) {
   const rooms = useRooms();
   const users = useUser(user);
+  const chats = useChats(user);
 
   console.log({ rooms });
   const [menu, setMenu] = React.useState(1);
+  const [searchResults, setSearchResults] = React.useState([]);
 
   function signOut() {
     auth.signOut();
@@ -37,6 +41,37 @@ export default function Sidebar({ user, page }) {
       });
     }
   };
+
+  async function searchUserandRooms(e) {
+    e.preventDefault();
+
+    const query = e.target.elements.search.value;
+
+    const userSnapshot = await db
+      .collection("users")
+      .where("name", "==", query)
+      .get();
+
+    const roomSnapshot = await db
+      .collection("rooms")
+      .where("name", "==", query)
+      .get();
+
+    const userResults = userSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const roomResults = roomSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const searchResults = [...userResults, ...roomResults];
+
+    setMenu(4);
+    setSearchResults(searchResults);
+  }
 
   let Nav;
   if (page.isMobile) {
@@ -71,7 +106,10 @@ export default function Sidebar({ user, page }) {
         </div>
       </div>
       <div className="sidebar__search">
-        <form className="sidebar__search--container">
+        <form
+          onSubmit={searchUserandRooms}
+          className="sidebar__search--container"
+        >
           <SearchOutlined />
           <input
             placeholder="Search for user or Chat rooms"
@@ -120,7 +158,7 @@ export default function Sidebar({ user, page }) {
       {page.isMobile ? (
         <Switch>
           <Route path="/chats">
-            <SidebarList title="Chats" data={[]} />
+            <SidebarList title="Chats" data={chats} />
           </Route>
           <Route path="/rooms">
             <SidebarList title="Rooms" data={rooms} />
@@ -129,17 +167,17 @@ export default function Sidebar({ user, page }) {
             <SidebarList title="Users" data={{ users }} />
           </Route>
           <Route path="/search">
-            <SidebarList title="Search Results" data={[]} />
+            <SidebarList title="Search Results" data={searchResults} />
           </Route>
         </Switch>
       ) : menu === 1 ? (
-        <SidebarList title="Chats" data={[]} />
+        <SidebarList title="Chats" data={chats} />
       ) : menu === 2 ? (
         <SidebarList title="Rooms" data={rooms} />
       ) : menu === 3 ? (
         <SidebarList title="Users" data={users} />
       ) : menu === 4 ? (
-        <SidebarList title="Search Results" data={[]} />
+        <SidebarList title="Search Results" data={searchResults} />
       ) : null}
 
       <div className="sidebar__chat--addRoom">
