@@ -14,9 +14,11 @@ import { NavLink, Switch, Route } from "react-router-dom";
 import SidebarList from "./SidebarList";
 import { db, createTimestamp } from "../firebase";
 import useRooms from "../hooks/useRooms";
+import useUser from "../hooks/useUsers";
 
 export default function Sidebar({ user, page }) {
   const rooms = useRooms();
+  const users = useUser(user);
 
   console.log({ rooms });
   const [menu, setMenu] = React.useState(1);
@@ -118,26 +120,26 @@ export default function Sidebar({ user, page }) {
       {page.isMobile ? (
         <Switch>
           <Route path="/chats">
-            <SidebarList />
+            <SidebarList title="Chats" data={[]} />
           </Route>
           <Route path="/rooms">
-            <SidebarList />
+            <SidebarList title="Rooms" data={rooms} />
           </Route>
           <Route path="/users">
-            <SidebarList />
+            <SidebarList title="Users" data={{ users }} />
           </Route>
           <Route path="/search">
-            <SidebarList />
+            <SidebarList title="Search Results" data={[]} />
           </Route>
         </Switch>
       ) : menu === 1 ? (
-        <SidebarList />
+        <SidebarList title="Chats" data={[]} />
       ) : menu === 2 ? (
-        <SidebarList />
+        <SidebarList title="Rooms" data={rooms} />
       ) : menu === 3 ? (
-        <SidebarList />
+        <SidebarList title="Users" data={users} />
       ) : menu === 4 ? (
-        <SidebarList />
+        <SidebarList title="Search Results" data={[]} />
       ) : null}
 
       <div className="sidebar__chat--addRoom">
