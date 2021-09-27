@@ -23,7 +23,7 @@ export default function Sidebar({ user, page }) {
   const users = useUser(user);
   const chats = useChats(user);
 
-  console.log({ rooms });
+  // console.log({ rooms });
   const [menu, setMenu] = React.useState(1);
   const [searchResults, setSearchResults] = React.useState([]);
 
