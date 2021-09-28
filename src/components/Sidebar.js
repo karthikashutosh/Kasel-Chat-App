@@ -1,7 +1,4 @@
-import React from "react";
-import "./Sidebar.css";
 import { Avatar, IconButton } from "@material-ui/core";
-import { auth } from "../firebase";
 import {
   Add,
   ExitToApp,
@@ -10,65 +7,58 @@ import {
   PeopleAlt,
   SearchOutlined,
 } from "@material-ui/icons";
-import { NavLink, Switch, Route } from "react-router-dom";
+import React from "react";
 import SidebarList from "./SidebarList";
-import { db, createTimestamp } from "../firebase";
+import { auth, createTimestamp, db } from "../firebase";
+import "./Sidebar.css";
+import { NavLink, Switch, Route } from "react-router-dom";
 import useRooms from "../hooks/useRooms";
-import useUser from "../hooks/useUsers";
+import useUsers from "../hooks/useUsers";
 import useChats from "../hooks/useChats";
-import { useCollection } from "react-firebase-hooks/firestore";
 
 export default function Sidebar({ user, page }) {
   const rooms = useRooms();
-  const users = useUser(user);
+  const users = useUsers(user);
   const chats = useChats(user);
 
-  // console.log({ rooms });
-  const [menu, setMenu] = React.useState(1);
   const [searchResults, setSearchResults] = React.useState([]);
+  const [menu, setMenu] = React.useState(1);
 
   function signOut() {
     auth.signOut();
   }
 
-  const createRoom = () => {
-    const roomName = prompt("Type the New RoomName");
+  function createRoom() {
+    const roomName = prompt("Type the name of your room");
 
-    if (roomName) {
+    if (roomName.trim()) {
       db.collection("rooms").add({
         name: roomName,
         timestamp: createTimestamp(),
       });
     }
-  };
+  }
 
-  async function searchUserandRooms(e) {
-    e.preventDefault();
-
-    const query = e.target.elements.search.value;
-
+  async function searchUsersAndRooms(event) {
+    event.preventDefault();
+    const query = event.target.elements.search.value;
     const userSnapshot = await db
       .collection("users")
       .where("name", "==", query)
       .get();
-
     const roomSnapshot = await db
       .collection("rooms")
       .where("name", "==", query)
       .get();
-
     const userResults = userSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-
     const roomResults = roomSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-
     const searchResults = [...userResults, ...roomResults];
-
     setMenu(4);
     setSearchResults(searchResults);
   }
@@ -105,17 +95,18 @@ export default function Sidebar({ user, page }) {
           </IconButton>
         </div>
       </div>
+
       <div className="sidebar__search">
         <form
-          onSubmit={searchUserandRooms}
+          onSubmit={searchUsersAndRooms}
           className="sidebar__search--container"
         >
           <SearchOutlined />
           <input
-            placeholder="Search for user or Chat rooms"
+            placeholder="Search for users or rooms"
             type="text"
             id="search"
-          ></input>
+          />
         </form>
       </div>
 
@@ -164,7 +155,7 @@ export default function Sidebar({ user, page }) {
             <SidebarList title="Rooms" data={rooms} />
           </Route>
           <Route path="/users">
-            <SidebarList title="Users" data={{ users }} />
+            <SidebarList title="Users" data={users} />
           </Route>
           <Route path="/search">
             <SidebarList title="Search Results" data={searchResults} />
