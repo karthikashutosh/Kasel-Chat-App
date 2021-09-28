@@ -1,5 +1,7 @@
 # Kasel-Chat-App
-Kasel chat app is clone of whatsapp
+Kasel chat app is clone of whatsapp that we can chat with other person with realtime 
+and We can upload and images to the Chat as well
+We can send media files such as audio and images 
 
 ### Functions
 1. USers can sign in using Social Sign like Google
